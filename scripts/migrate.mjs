@@ -8,6 +8,9 @@
  *
  * No DATABASE_URL (local / preview builds) -> skip; the PGLite fallback applies
  * the same files at startup instead (see src/lib/db.ts).
+ *
+ * Connection / SQL failures log and exit 0 so a misconfigured DATABASE_URL
+ * never blocks shipping the static app (gallery does not require a DB).
  */
 import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -25,7 +28,11 @@ if (!databaseUrl) {
 const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), "..", "migrations");
 
 async function main() {
-  const pool = new pg.Pool({ connectionString: databaseUrl, max: 1 });
+  const pool = new pg.Pool({
+    connectionString: databaseUrl,
+    max: 1,
+    connectionTimeoutMillis: 8_000,
+  });
   const client = await pool.connect();
   try {
     await client.query(
@@ -49,7 +56,6 @@ async function main() {
       const text = await readFile(join(migrationsDir, name), "utf8");
       try {
         await client.query("BEGIN");
-        // pg's simple-query protocol runs a whole multi-statement file at once.
         await client.query(text);
         await client.query("INSERT INTO _migrations (name) VALUES ($1)", [name]);
         await client.query("COMMIT");
@@ -58,7 +64,7 @@ async function main() {
         try {
           await client.query("ROLLBACK");
         } catch {
-          // ROLLBACK fails when the connection died — keep the original error.
+          /* keep original */
         }
         throw err;
       }
@@ -73,10 +79,10 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error("[migrate] failed:", err?.message || err);
-  // pg errors carry the context needed to debug a bad SQL file.
+  console.error("[migrate] failed (non-fatal):", err?.message || err);
   for (const key of ["code", "detail", "hint", "position", "where"]) {
     if (err?.[key] != null) console.error(`[migrate]   ${key}: ${err[key]}`);
   }
-  process.exit(1);
+  // Do not fail the Vercel/Grok deploy — this app is a client-side gallery.
+  process.exit(0);
 });

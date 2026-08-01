@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import {
   Outlet,
   createRootRoute,
@@ -16,44 +15,28 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1, viewport-fit=cover",
       },
       {
-        title: "Herbarium — 80 Procedural Specimens",
+        title: "Spores — 80 Procedural Specimens",
       },
       {
         name: "description",
         content:
-          "A micro-herbarium of eighty self-lit procedural plants. Drag to rotate. Arrow keys to browse.",
+          "Interactive gallery of self-lit procedural plant specimens with spherical-harmonics shading and night bloom.",
       },
       { name: "theme-color", content: "#f7f6f3" },
     ],
-    links: [
-      { rel: "stylesheet", href: appCss },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      {
-        rel: "preconnect",
-        href: "https://fonts.gstatic.com",
-        crossOrigin: "anonymous",
-      },
-    ],
+    links: [{ rel: "stylesheet", href: appCss }],
   }),
-  component: RootComponent,
+  component: RootDocument,
 });
 
-function RootComponent() {
-  return (
-    <RootDocument>
-      <Outlet />
-    </RootDocument>
-  );
-}
-
-function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+function RootDocument() {
   return (
     <html lang="en">
       <head>
         <HeadContent />
       </head>
       <body>
-        {children}
+        <Outlet />
         <Scripts />
       </body>
     </html>

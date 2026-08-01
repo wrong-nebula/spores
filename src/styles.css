@@ -1,0 +1,131 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --color-paper: #f7f6f3;
+  --color-ink: #1a1a1a;
+  --color-ink-muted: #6b6b6b;
+  --color-ink-faint: #a8a8a8;
+  --color-edge: rgba(26, 26, 26, 0.08);
+
+  --ease-out-expo: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-quick: 150ms;
+  --motion-fast: 220ms;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: var(--paper-bg, #f7f6f3);
+    overflow: hidden;
+    transition:
+      background-color 500ms var(--ease-out-soft),
+      color 400ms var(--ease-out-soft);
+  }
+
+  /* Night palette — pure black stage; chrome stays dim so plants read first */
+  html.night,
+  body.night {
+    --color-paper: #000000;
+    --color-ink: #d4d4d8;
+    --color-ink-muted: #52525b;
+    --color-ink-faint: #3f3f46;
+    --color-edge: rgba(255, 255, 255, 0.08);
+  }
+
+  body.night {
+    background: #000000;
+    color: var(--color-ink);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--plant-tint, #c8c4bc) 35%, transparent);
+  }
+}
+
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.specimen-label {
+  animation: fade-rise 280ms var(--ease-out-expo) both;
+}
+
+/* Latin name: quieter still in night */
+.night .specimen-latin {
+  color: #3f3f46;
+}
+
+.nav-edge {
+  transition:
+    opacity var(--motion-fast) var(--ease-out-soft),
+    transform var(--motion-fast) var(--ease-out-soft),
+    background-color var(--motion-quick) ease;
+}
+
+.nav-edge:active {
+  transform: scale(0.96);
+}
+
+.theme-toggle {
+  background: transparent;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.theme-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1.5px color-mix(in oklab, var(--color-ink) 28%, transparent);
+}
+
+.theme-toggle:active {
+  transform: scale(0.94);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    transition: none;
+  }
+  .specimen-label {
+    animation: none;
+  }
+  .nav-edge {
+    transition: none;
+  }
+}

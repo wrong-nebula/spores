@@ -2,6 +2,8 @@
 
 Interactive gallery of **80 procedural plant specimens** — self-lit meshes with spherical-harmonics shading, paper spill, night mode bloom, and specimen-specific spore dust.
 
+**Live:** [https://spores.grok.me](https://spores.grok.me)
+
 ## Stack
 
 React · TypeScript · Vite · TanStack Start · Three.js / R3F · Tailwind

@@ -14,3 +14,5 @@ artifacts/
 attachments/
 *.log
 .DS_Store
+.grok/
+AGENTS.md
